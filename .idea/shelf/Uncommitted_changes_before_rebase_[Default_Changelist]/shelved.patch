@@ -1,0 +1,212 @@
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>apply plugin: 'com.android.application'\napply plugin: 'android-aspectjx'\n\nandroid {\n    compileSdkVersion 29\n    buildToolsVersion \"29.0.2\"\n\n    defaultConfig {\n        applicationId \"com.mn_aspectj\"\n        minSdkVersion 21\n        targetSdkVersion 29\n        versionCode 1\n        versionName \"1.0\"\n\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\n    }\n\n    buildTypes {\n\n        debug {\n            buildConfigField('boolean', 'NEED_PRINT_LOG', 'true')\n        }\n\n        release {\n            buildConfigField('boolean', 'NEED_PRINT_LOG', 'false')\n            minifyEnabled false\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\n        }\n    }\n    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_1_8\n        targetCompatibility JavaVersion.VERSION_1_8\n    }\n\n}\n\ndependencies {\n    implementation fileTree(dir: 'libs', include: ['*.jar'])\n\n    implementation 'androidx.appcompat:appcompat:1.1.0'\n    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'\n    testImplementation 'junit:junit:4.12'\n    androidTestImplementation 'androidx.test.ext:junit:1.1.1'\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'\n    implementation 'org.aspectj:aspectjrt:1.9.5'\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision 9cf13ec145d3769f47ddadad4090b72cdf0c63a6)
++++ app/build.gradle	(date 1618275003000)
+@@ -43,4 +43,5 @@
+     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+     implementation 'org.aspectj:aspectjrt:1.9.5'
++    implementation 'com.alibaba:fastjson:1.1.54.android'
+ }
+Index: app/src/main/java/com/mn_aspectj/activity/MainDianActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.mn_aspectj.activity;\n\nimport android.os.Bundle;\nimport android.view.View;\n\nimport com.mn_aspectj.R;\nimport com.mn_aspectj.annotation.maiDian.MaiDianData;\n\nimport androidx.annotation.Nullable;\nimport androidx.appcompat.app.AppCompatActivity;\n\n/**\n * Create by Jone on 4/11/21\n */\npublic class MainDianActivity extends AppCompatActivity {\n\n    @Override\n    protected void onCreate(@Nullable Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        setContentView(R.layout.activity_main);\n    }\n\n\n    /**\n     * 给服务器上传数据\n     *\n     * @param view\n     */\n    public void sendData(View view) {\n        setUserToUi(\"Jone\");\n    }\n\n    /**\n     * 收集用户当前Activity的行为统计\n     * @param name\n     */\n    @MaiDianData\n    public void setUserToUi(String name) {\n\n    }\n\n    //上传异常统计\n    public void uploadError(String name,String time) {\n\n\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/mn_aspectj/activity/MainDianActivity.java	(revision 9cf13ec145d3769f47ddadad4090b72cdf0c63a6)
++++ app/src/main/java/com/mn_aspectj/activity/MainDianActivity.java	(date 1618272443000)
+@@ -5,6 +5,7 @@
+ 
+ import com.mn_aspectj.R;
+ import com.mn_aspectj.annotation.maiDian.MaiDianData;
++import com.mn_aspectj.annotation.maiDian.ParamsAnnotation;
+ 
+ import androidx.annotation.Nullable;
+ import androidx.appcompat.app.AppCompatActivity;
+@@ -27,20 +28,21 @@
+      * @param view
+      */
+     public void sendData(View view) {
+-        setUserToUi("Jone");
++        setUserToUi("Jone","qwe123");
+     }
+ 
+     /**
+      * 收集用户当前Activity的行为统计
++     *
+      * @param name
+      */
+     @MaiDianData
+-    public void setUserToUi(String name) {
++    public void setUserToUi(@ParamsAnnotation("name") String name,@ParamsAnnotation("password") String password) {
+ 
+     }
+ 
+     //上传异常统计
+-    public void uploadError(String name,String time) {
++    public void uploadError(String name, String time) {
+ 
+ 
+     }
+Index: app/src/main/java/com/mn_aspectj/aspectJ/MaiDianAspect.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.mn_aspectj.aspectJ;\n\nimport android.util.Log;\n\nimport org.aspectj.lang.ProceedingJoinPoint;\nimport org.aspectj.lang.annotation.Around;\nimport org.aspectj.lang.annotation.Aspect;\nimport org.aspectj.lang.annotation.Pointcut;\n\n/**\n * Create by Jone on 4/11/21\n */\n@Aspect\npublic class MaiDianAspect {\n    //定义一个切点 然后进行匹配。任意方法 ，任意参数类型\n    @Pointcut(\"execution(@com.mn_aspectj.annotation.maiDian.MaiDianData * * (..))\")\n    public void uploadMaiDian() {\n    }\n\n\n    //定义一个连接点\n    @Around(\"uploadMaiDian()\")\n    public void executeSetting(ProceedingJoinPoint joinPoint) {\n\n        Log.e(\"MN---->\",\"executeSetting\");\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/mn_aspectj/aspectJ/MaiDianAspect.java	(revision 9cf13ec145d3769f47ddadad4090b72cdf0c63a6)
++++ app/src/main/java/com/mn_aspectj/aspectJ/MaiDianAspect.java	(date 1618276150000)
+@@ -2,10 +2,22 @@
+ 
+ import android.util.Log;
+ 
++import com.alibaba.fastjson.JSONObject;
++import com.mn_aspectj.annotation.maiDian.CommonAnnotationBase;
++import com.mn_aspectj.annotation.maiDian.ParamsAnnotation;
++
+ import org.aspectj.lang.ProceedingJoinPoint;
++import org.aspectj.lang.Signature;
+ import org.aspectj.lang.annotation.Around;
+ import org.aspectj.lang.annotation.Aspect;
+ import org.aspectj.lang.annotation.Pointcut;
++import org.aspectj.lang.reflect.FieldSignature;
++import org.aspectj.lang.reflect.MethodSignature;
++
++import java.lang.annotation.Annotation;
++import java.lang.reflect.Field;
++import java.lang.reflect.Method;
++import java.lang.reflect.Parameter;
+ 
+ /**
+  * Create by Jone on 4/11/21
+@@ -21,7 +33,96 @@
+     //定义一个连接点
+     @Around("uploadMaiDian()")
+     public void executeSetting(ProceedingJoinPoint joinPoint) {
++        //Log.e("MN---->","executeSetting");
++        //通过反射得到方法.ProceedingJoinPoint不仅可以切到方法，还可以切到类和成员变量
++        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
++        Method method = signature.getMethod();
++        //获取方法上的所有注解
++        Annotation[] annotations = method.getAnnotations();
++        //获取这个方法内接收的属性注解；public void setUserToUi(@ParamsAnnotation("name") String name
++        Annotation[] paramsAnnotation = getMethodParamsAnnotation(method);
++        //创建一个CommonAnnotationBase
++        CommonAnnotationBase commonAnnotationBase = null;
++        //遍历方法的注解
++        for (Annotation annotation : annotations) {
++            //得到它的注解类型
++            Class<?> aClass = annotation.annotationType();//这里是MaiDianData注解
++            commonAnnotationBase = aClass.getAnnotation(CommonAnnotationBase.class);//MaiDianData上面的注解@CommonAnnotationBase
++            if (commonAnnotationBase == null) {
++                break;
++            }
++        }
++
++        //return搬到for循环外边，是为了继续执行原有的业务逻辑，然后在return
++        if (commonAnnotationBase == null) {
++            try {
++                joinPoint.proceed();
++            } catch (Throwable throwable) {
++                throwable.printStackTrace();
++            }
++            return;
++        }
++        //获取注解携带的type以及Id
++        String type = commonAnnotationBase.type();
++        String actionId = commonAnnotationBase.actionId();
++        //public void setUserToUi(@ParamsAnnotation("name") String name,@ParamsAnnotation("password") String password)
++        Object[] args = joinPoint.getArgs();//获取该方法接收的所有参数:name ,password
++        JSONObject object = getData(paramsAnnotation, args);
++        //把收集起来的数据上传到服务器
++        String msg = "上传埋点：" + "type：" + type + " actionId:" + actionId + " data: " + object.toString();
++        Log.e("MN---->", msg);
++        //可以通过上次类似的权限申请的注解回调，把埋点信息传入到上传的代码中
+ 
+-        Log.e("MN---->","executeSetting");
++        try {
++            joinPoint.proceed();
++        } catch (Throwable throwable) {
++            throwable.printStackTrace();
++        }
++
++    }
++
++    /**
++     * 将采集到的数据 key value
++     *
++     * @param paramsAnnotation
++     * @param args
++     * @return
++     */
++    private JSONObject getData(Annotation[] paramsAnnotation, Object[] args) {
++        if (paramsAnnotation == null || paramsAnnotation.length <= 0) return null;
++        JSONObject object = new JSONObject();
++        for (int i = 0; i < paramsAnnotation.length; i++) {
++            Annotation annotation = paramsAnnotation[i];
++            if (annotation instanceof ParamsAnnotation) {
++                String paramName = ((ParamsAnnotation) annotation).value();
++                object.put(paramName, args[i].toString());
++            }
++        }
++        return object;
++    }
++
++    /**
++     * 获取到方法参数的注解
++     *
++     * @param method
++     * @return
++     */
++    public Annotation[] getMethodParamsAnnotation(Method method) {
++        //Parameter[] parameters = method.getParameters();//只支持最低API >= 26，不推荐使用
++        //二维数组获取所有属性的注解,注意这里不是注解上还有注解，而是一个属性可能有多个注解。
++        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
++        if (parameterAnnotations == null || parameterAnnotations.length == 0) return null;
++        //方法接收的参数，可能并不是全部是注解参数，所以这里的数组长度需要是注解参数的数量，而不是方法参数的数量
++        //public void setUserToUi(@ParamsAnnotation("name") String name,int age)
++        Annotation[] annotations = new Annotation[parameterAnnotations.length];
++        int i = 0;
++        for (Annotation[] parameterAnnotation : parameterAnnotations) {
++            for (Annotation annotation : parameterAnnotation) {
++                annotations[i++] = annotation;
++                //Log.e("MN------>", annotation + "");
++            }
++        }
++        return annotations;
++
+     }
+ }
+Index: app/src/main/java/com/mn_aspectj/annotation/maiDian/ParamsAnnotation.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/mn_aspectj/annotation/maiDian/ParamsAnnotation.java	(date 1618241778000)
++++ app/src/main/java/com/mn_aspectj/annotation/maiDian/ParamsAnnotation.java	(date 1618241778000)
+@@ -0,0 +1,17 @@
++package com.mn_aspectj.annotation.maiDian;
++
++import java.lang.annotation.ElementType;
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
++import java.lang.annotation.Target;
++
++/**
++ * Create by Jone on 4/12/21
++ * 用来标示每个数据收集所对应的数据的key，它是参数注解
++ */
++
++@Target({ElementType.PARAMETER, ElementType.METHOD})//参数注解可以声明在参数上，以及方法上
++@Retention(RetentionPolicy.RUNTIME)
++public @interface ParamsAnnotation {
++    String value() default "";//@ParamsAnnotation String name
++}
